@@ -15,9 +15,10 @@ from dash.dependencies import Input, Output
 import flask
 import numexpr as ne 
 
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 server = flask.Flask(__name__)
-app = dash.Dash(server=server, title='Julia set generator')
+app = dash.Dash(server=server, title='Julia set generator', external_stylesheets=external_stylesheets)
 
 colors = {
 	'background': '#fffff',
@@ -91,7 +92,7 @@ app.layout = html.Div(
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
-			'margin-bottom': '3vh',
+			'margin-bottom': '1vh',
 			'margin-top': '1vh'
 		}
 	),
@@ -153,7 +154,7 @@ app.layout = html.Div(
 			type='number',
 			value=200,
 			min=0,
-			max=250,
+			max=200,
 			style={'margin-top': '1vh'})
 		], 
 		style={
@@ -180,7 +181,8 @@ app.layout = html.Div(
 		'display': 'inline-block',
 		'width': '15vw',
 		'margin-right': '0vw',
-		'margin-left':'3vw',
+		'margin-left':'2vw',
+		'padding-left': '1vw'
 	}),
 
 
@@ -208,10 +210,12 @@ app.layout = html.Div(
 		id='equation', 
 		style={
 			'textAlign': 'left',
-			'font-family': 'serif', 
-			'font-weight': 'bold',
+			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
+			'font-weight': 'normal',
 			'margin-top': '0vh',
-			'margin-left': '21vw'
+			'margin-left': '21vw',
+			'line-height': 1.8,
+			'font-size': 'large'
 		}),
 
 	html.Br(),
@@ -253,7 +257,7 @@ def display_choropleth(creal_value, cimag_value, colormap_value, steps_value, re
 	Input('cimag', 'value')])
 def display_equation(creal_value, cimag_value):
 	# show equation that is iterated in the complex plane
-	return f'Equation:   z\u00b2 + ({creal_value} + {cimag_value}i) '
+	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
 
 # run the app in the cloud
