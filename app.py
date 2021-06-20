@@ -20,7 +20,7 @@ server = flask.Flask(__name__)
 app = dash.Dash(server=server, title='Julia set generator')
 
 colors = {
-	'background': '#C1C0C6',
+	'background': '#fffff',
 	'text': '#10110'
 }
 
@@ -37,7 +37,7 @@ def julia_set(c_value, max_iterations, res_value):
 	w_range = int(res_value[0])
 
 	# initialize ogrid
-	y, x = np.ogrid[1.4: -1.4: h_range*1j, -1.7: 1.7: w_range*1j]
+	y, x = np.ogrid[1.4: -1.4: h_range*1j, -1.6: 1.6: w_range*1j]
 	z_array = x + y*1j
 
 	iterations_until_divergence = max_iterations + np.zeros(z_array.shape)
@@ -91,8 +91,8 @@ app.layout = html.Div(
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
-			'margin-bottom': '3vh',
-			'margin-top': '1vh'
+			'margin-bottom': '1vh',
+			'margin-top': '0vh'
 		}
 	),
 
@@ -215,15 +215,19 @@ app.layout = html.Div(
 		}),
 
 	html.Br(),
-	dcc.Loading(
-		html.Img(
-			id='image',
-			style={'display': 'inline-block',
-					'width': '75vw',
-					'height': '100vh',
-					'margin-left': '12vw'}),
-		type='cube'
-	)
+	html.Div(
+		children=[
+		dcc.Loading(
+			html.Img(
+				id='image'),
+			type='cube'
+		)],
+		style={
+			'width': '100%',
+			'display': 'flex',
+			'align-items': 'center',
+			'justify-content': 'center',
+		})
 ])
 
 # responsive callbacks
@@ -259,8 +263,7 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8008)
-	# app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
