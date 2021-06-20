@@ -181,7 +181,7 @@ app.layout = html.Div(
 		'display': 'inline-block',
 		'width': '15vw',
 		'margin-right': '0vw',
-		'margin-left':'2vw',
+		'margin-left':'3.5vw',
 		'padding-left': '1vw'
 	}),
 
@@ -200,7 +200,7 @@ app.layout = html.Div(
 		style={
 		'display':'inline-block',
 		'width': '13vw',
-		'margin-left': '4vw', 
+		'margin-left': '2.5vw', 
 		'margin-right': '0vw',
 		'margin-top': 0,
 		'text-align': 'top'
@@ -213,9 +213,9 @@ app.layout = html.Div(
 			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
 			'font-weight': 'normal',
 			'margin-top': '0vh',
-			'margin-left': '21vw',
-			'line-height': 1.8,
-			'font-size': 'large'
+			'margin-left': '26vw',
+			# 'line-height': 1.8,
+			'font-size': '2.2rem'
 		}),
 
 	html.Br(),
@@ -223,8 +223,8 @@ app.layout = html.Div(
 		html.Img(
 			id='image',
 			style={'display': 'inline-block',
-					'width': '75vw',
-					'margin-left': '12vw'}),
+					'width': '80vw',
+					'margin-left': '9vw'}),
 		type='cube'
 	)
 ])
@@ -262,7 +262,6 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8011)
 	app.run_server(debug=True, host='0.0.0.0')
 
 
