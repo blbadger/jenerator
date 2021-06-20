@@ -37,7 +37,7 @@ def julia_set(c_value, max_iterations, res_value):
 	w_range = int(res_value[0])
 
 	# initialize ogrid
-	y, x = np.ogrid[1.4: -1.4: h_range*1j, -1.6: 1.6: w_range*1j]
+	y, x = np.ogrid[1.3: -1.3: h_range*1j, -1.6: 1.6: w_range*1j]
 	z_array = x + y*1j
 
 	iterations_until_divergence = max_iterations + np.zeros(z_array.shape)
@@ -91,8 +91,8 @@ app.layout = html.Div(
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
-			'margin-bottom': '1vh',
-			'margin-top': '0vh'
+			'margin-bottom': '3vh',
+			'margin-top': '1vh'
 		}
 	),
 
@@ -174,12 +174,12 @@ app.layout = html.Div(
 						 for x in resolutions],
 				value=resolutions[-1],
 				style={
-					'width': '12vw'})
+					'width': '15vw'})
 		],
 		style={
 		'display': 'inline-block',
-		'width': '10vw',
-		'margin-right': '2vw',
+		'width': '15vw',
+		'margin-right': '0vw',
 		'margin-left':'3vw',
 	}),
 
@@ -215,19 +215,14 @@ app.layout = html.Div(
 		}),
 
 	html.Br(),
-	html.Div(
-		children=[
-		dcc.Loading(
-			html.Img(
-				id='image'),
-			type='cube'
-		)],
-		style={
-			'width': '100%',
-			'display': 'flex',
-			'align-items': 'center',
-			'justify-content': 'center',
-		})
+	dcc.Loading(
+		html.Img(
+			id='image',
+			style={'display': 'inline-block',
+					'width': '75vw',
+					'margin-left': '12vw'}),
+		type='cube'
+	)
 ])
 
 # responsive callbacks
@@ -263,6 +258,7 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
+	# app.run_server(debug=True, port=8011)
 	app.run_server(debug=True, host='0.0.0.0')
 
 
