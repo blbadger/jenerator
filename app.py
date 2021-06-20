@@ -160,7 +160,7 @@ app.layout = html.Div(
 				id='res',
 				options=[{'value': x, 'label': x} 
 						 for x in resolutions],
-				value=resolutions[-2],
+				value=resolutions[-3],
 				style={
 					'width': '12vw'})
 		],
