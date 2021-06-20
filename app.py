@@ -13,6 +13,7 @@ import dash_core_components as dcc
 import dash_html_components as html 
 from dash.dependencies import Input, Output
 import flask
+import numexpr as ne 
 
 
 server = flask.Flask(__name__)
@@ -77,7 +78,7 @@ colormaps = [
             'gist_ncar'
             ]
 
-resolutions = ['900 by 600', '1500 by 1000', '1800 by 1200', '2100 by 1400']
+resolutions = ['900 by 600', '1500 by 1000', '1650 by 1100']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -100,8 +101,9 @@ app.layout = html.Div(
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
-			'margin-bottom': '1vh',
-			'margin-top': '1vh'
+			'margin-bottom': '0vh',
+			'margin-top': '0vh',
+			'margin-left': '45vw'
 		}
 	),
 
@@ -170,7 +172,7 @@ app.layout = html.Div(
 				id='res',
 				options=[{'value': x, 'label': x} 
 						 for x in resolutions],
-				value=resolutions[-3],
+				value=resolutions[-1],
 				style={
 					'width': '12vw'})
 		],
@@ -205,10 +207,11 @@ app.layout = html.Div(
 	html.Div(
 		id='equation', 
 		style={
-			'textAlign': 'center',
+			'textAlign': 'left',
 			'font-family': 'serif', 
 			'font-weight': 'bold',
-			'margin-top': '2vh'
+			'margin-top': '0vh',
+			'margin-left': '21vw'
 		}),
 
 	html.Br(),
@@ -251,12 +254,13 @@ def display_choropleth(creal_value, cimag_value, colormap_value, steps_value, re
 	Input('cimag', 'value')])
 def display_equation(creal_value, cimag_value):
 	# show equation that is iterated in the complex plane
-	return f'Equation: z\u00b2 + ({creal_value} + {cimag_value}i) '
+	return f'Equation:   z\u00b2 + ({creal_value} + {cimag_value}i) '
 
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, port=8008)
+	# app.run_server(debug=True, host='0.0.0.0')
 
 
 
