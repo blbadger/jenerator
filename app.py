@@ -77,7 +77,7 @@ colormaps = [
             'gist_ncar'
             ]
 
-resolutions = ['900 by 600', '1500 by 1000', '3000 by 2000', '6000 by 4000']
+resolutions = ['900 by 600', '1500 by 1000', '1800 by 1200', '2100 by 1400']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -86,11 +86,21 @@ app.layout = html.Div(
 		'font-family': 'sans-serif'}, 
 	children=[
 	html.H1(
-		children='Jenerator (Julia sets generator',
+		children='Jenerator',
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
 			'margin-bottom': '3vh',
+			'margin-top': '1vh'
+		}
+	),
+
+	html.H4(
+		children='Julia set generator',
+		style={
+			'textAlign': 'center',
+			'color': colors['text'],
+			'margin-bottom': '1vh',
 			'margin-top': '1vh'
 		}
 	),
@@ -139,9 +149,9 @@ app.layout = html.Div(
 			dcc.Input(
 			id='steps',
 			type='number',
-			value=10,
+			value=200,
 			min=0,
-			max=1000,
+			max=250,
 			style={'margin-top': '1vh'})
 		], 
 		style={
