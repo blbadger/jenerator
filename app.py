@@ -8,16 +8,10 @@ import base64
 # import third-party libraries
 import numpy as np 
 import matplotlib.pyplot as plt 
-
 import dash
 import dash_core_components as dcc 
 import dash_html_components as html 
 from dash.dependencies import Input, Output
-import plotly.express as px
-import plotly.graph_objects as go
-
-import json
-import pandas as pd
 import flask
 
 
@@ -92,51 +86,52 @@ app.layout = html.Div(
 		'font-family': 'sans-serif'}, 
 	children=[
 	html.H1(
-		children='Jotter: Julia set plotter',
+		children='Jenerator (Julia sets generator',
 		style={
 			'textAlign': 'center',
-			'color': colors['text']
+			'color': colors['text'],
+			'margin-bottom': '3vh',
+			'margin-top': '1vh'
 		}
 	),
 
-	html.Div(
 
-		html.Div(
-			children=[
+	html.Div(
+		children=[
 			html.Label('Specify real value'),
 				dcc.Input(
 				id='creal',
 				type='text',
 				value='-0.744',
 				style={'margin-top': '1vh'})
-			], 
-			style={
-			'display':'inline-block',
-			'width': '13vw',
-			'margin-left': '10vw', 
-			'margin-right': '1vw',
-			'margin-top': '0vh',
-			'text-align': 'center'
-		}),
+		], 
+		style={
+		'display':'inline-block',
+		'width': '13vw',
+		'margin-left': '10vw', 
+		'margin-right': '1vw',
+		'margin-top': '0vh',
+		'text-align': 'center'
+	}),
 
-		html.Div(
-			children=[
+	html.Div(
+		children=[
 			html.Label('Specify imaginary value'),
 				dcc.Input(
 				id='cimag',
 				type='text',
 				value='0.148',
 				style={'margin-top': '1vh'})
-			], 
-			style={
-			'display':'inline-block',
-			'width': '13vw',
-			'margin-left': '1vw', 
-			'margin-right': '1vw',
-			'margin-top': '0vh',
-			'text-align': 'center'
-		}),
-	),
+		], 
+		style={
+		'display':'inline-block',
+		'width': '13vw',
+		'margin-left': '1vw', 
+		'margin-right': '1vw',
+		'margin-top': '0vh',
+		'text-align': 'center'
+	}),
+		
 
 	html.Div(
 		children=[
@@ -173,7 +168,7 @@ app.layout = html.Div(
 		'display': 'inline-block',
 		'width': '10vw',
 		'margin-right': '2vw',
-		'margin-left':'3vw'
+		'margin-left':'3vw',
 	}),
 
 
@@ -213,7 +208,8 @@ app.layout = html.Div(
 			style={'display': 'inline-block',
 					'width': '75vw',
 					'height': '100vh',
-					'margin-left': '12vw'})
+					'margin-left': '12vw'}),
+		type='cube'
 	)
 ])
 
@@ -250,8 +246,7 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8003)
-	# app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
