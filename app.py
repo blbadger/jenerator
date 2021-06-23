@@ -12,8 +12,20 @@ import dash
 import dash_core_components as dcc 
 import dash_html_components as html 
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 import flask
 import numexpr as ne 
+import json
+
+from redis import Redis
+from rq import Queue
+from juliaset import julia_set
+
+# import connection from worker.py
+from worker import conn 
+import time
+
+q = Queue(connection=conn)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -24,41 +36,6 @@ colors = {
 	'background': '#fffff',
 	'text': '#10110'
 }
-
-
-def julia_set(c_value, max_iterations, res_value):
-	# convert string resolution to int pair
-	res_value = [i for i in res_value.split()]
-
-	for i in range(len(res_value)):
-		if res_value[i] == 'by':
-			del res_value[i]
-			break
-	h_range = int(res_value[1])
-	w_range = int(res_value[0])
-
-	# initialize ogrid
-	y, x = np.ogrid[1.3: -1.3: h_range*1j, -1.6: 1.6: w_range*1j]
-	z_array = x + y*1j
-
-	iterations_until_divergence = max_iterations + np.zeros(z_array.shape)
-	not_already_diverged = iterations_until_divergence < 10000
-
-	for i in range(max_iterations):
-		z_array = z_array**2 + c_value
-
-		# make a boolean array for diverging indicies of z_array
-		z_size_array = z_array * np.conj(z_array)
-		diverging = z_size_array > 4
-		diverging_now = diverging & not_already_diverged
-
-		iterations_until_divergence[diverging_now] = i
-		not_already_diverged = np.invert(diverging_now) & not_already_diverged
-
-		# prevent overflow (numbers -> infinity) for diverging locations
-		z_array[diverging_now] = 0 
-		
-	return iterations_until_divergence
 
 colormaps = [
             'viridis', 'plasma', 'inferno', 'magma', 'cividis',
@@ -79,7 +56,7 @@ colormaps = [
             'gist_ncar'
             ]
 
-resolutions = ['900 by 600', '1500 by 1000', '1650 by 1100']
+resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '3000 by 2000', '4002 by 2668']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -152,9 +129,9 @@ app.layout = html.Div(
 			dcc.Input(
 			id='steps',
 			type='number',
-			value=200,
+			value=100,
 			min=0,
-			max=200,
+			max=300,
 			style={'margin-top': '1vh'})
 		], 
 		style={
@@ -173,7 +150,7 @@ app.layout = html.Div(
 				id='res',
 				options=[{'value': x, 'label': x} 
 						 for x in resolutions],
-				value=resolutions[-1],
+				value=resolutions[2],
 				style={
 					'width': '15vw'})
 		],
@@ -213,10 +190,17 @@ app.layout = html.Div(
 			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
 			'font-weight': 'normal',
 			'margin-top': '0vh',
-			'margin-left': '26vw',
+			'margin-left': '20vw',
 			# 'line-height': 1.8,
 			'font-size': '2.2rem'
 		}),
+
+	# html.Div(
+	# 	html.Button('Click to run', id='button'),
+	# 	style={
+	# 		'display': 'inline-block',
+	# 	},
+	# 	id='body-div'),
 
 	html.Br(),
 	dcc.Loading(
@@ -229,39 +213,63 @@ app.layout = html.Div(
 	)
 ])
 
-# responsive callbacks
+# responsive callbacks ('component_id' etc are not strictly necessary but 
+# are included for clarity)
 @app.callback(Output(component_id='image', component_property='src'), 
 			[Input(component_id='creal', component_property='value'),
 			 Input(component_id='cimag', component_property='value'),
 			 Input(component_id='colormap', component_property='value'),
 			 Input(component_id='steps', component_property='value'),
-			 Input(component_id='res', component_property='value')])
-def display_choropleth(creal_value, cimag_value, colormap_value, steps_value, res_value):
+			 Input(component_id='res', component_property='value'),
+			 ])
+def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_value):
+
+	# if n_clicks == 0:
+	# 	raise PreventUpdate
+
 	# convert inputs to args and build array
 	max_iterations = steps_value
 	creal = float(creal_value)
 	cimag = float(cimag_value)
 	c = creal + cimag*1j
-	arr = julia_set(c, max_iterations, res_value)
 
-	# save array as bytestring image for html.Img div
+	# send job to redis queue
+	job = q.enqueue(julia_set, c, max_iterations, res_value)
+
+	# wait while img is generated (but only for 500s max)
+	while job.result is None:
+		time.sleep(0.5)
+
+	arr = job.result
+
 	buf = io.BytesIO()
 	plt.imsave(buf, arr, cmap=colormap_value, format='png')
 	data = base64.b64encode(buf.getbuffer()).decode("utf8") 
 	return "data:image/png;base64,{}".format(data)
 
+	return buf
 
 @app.callback(
-	Output('equation', 'children'),
-	[Input('creal', 'value'),
-	Input('cimag', 'value')])
+	Output(component_id='equation', component_property='children'),
+	[Input(component_id='creal', component_property='value'),
+	Input(component_id='cimag', component_property='value')])
 def display_equation(creal_value, cimag_value):
 	# show equation that is iterated in the complex plane
 	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
 
+# @app.callback(
+# 	Output('button', 'n_clicks'),
+# 	[Input('button', 'n_clicks')]
+# 	)
+# def update_output(n_clicks):
+# 	if n_clicks >= 1:
+# 		return 0
+
+
 # run the app in the cloud
 if __name__ == '__main__':
+	# app.run_server(debug=True, port=8016)
 	app.run_server(debug=True, host='0.0.0.0')
 
 
