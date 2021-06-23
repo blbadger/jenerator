@@ -220,11 +220,11 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 	c = creal + cimag*1j
 
 	# send job to redis queue
-	job = q.enqueue(julia_set, c, max_iterations, res_value)
+	job = q.enqueue(julia_set, c, max_iterations, res_value, description='Julia set job')
 
 	# wait while img is generated (but only for 500s max)
 	while job.result is None:
-		time.sleep(0.5)
+		time.sleep(0.1)
 
 	arr = job.result
 
@@ -246,7 +246,7 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8007)
+	app.run_server(debug=True, port=8002)
 	# app.run_server(debug=True, host='0.0.0.0')
 
 
