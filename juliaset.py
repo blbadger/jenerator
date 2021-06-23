@@ -51,6 +51,3 @@ def julia_set(c_value, max_iterations, res_value, cmap):
 	plt.imsave(buf, arr, cmap=cmap, format='png')
 	data = base64.b64encode(buf.getbuffer()).decode("utf8") 
 	return "data:image/png;base64,{}".format(data)
-
-	# # save array as bytestring image for html.Img div
-	# return arr
