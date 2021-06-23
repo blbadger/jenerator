@@ -13,7 +13,6 @@ import dash_core_components as dcc
 import dash_html_components as html 
 from dash.dependencies import Input, Output
 import flask
-import numexpr as ne 
 import json
 
 from redis import Redis
