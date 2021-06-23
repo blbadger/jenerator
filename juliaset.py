@@ -8,7 +8,7 @@ import base64
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-def julia_set(c_value, max_iterations, res_value):
+def julia_set(c_value, max_iterations, res_value, cmap):
 	# convert string resolution to int pair
 	res_value = [i for i in res_value.split()]
 
@@ -47,5 +47,10 @@ def julia_set(c_value, max_iterations, res_value):
 
 	arr = iterations_until_divergence
 
-	# save array as bytestring image for html.Img div
-	return arr
+	buf = io.BytesIO()
+	plt.imsave(buf, arr, cmap=cmap, format='png')
+	data = base64.b64encode(buf.getbuffer()).decode("utf8") 
+	return "data:image/png;base64,{}".format(data)
+
+	# # save array as bytestring image for html.Img div
+	# return arr

@@ -218,22 +218,18 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 	creal = float(creal_value)
 	cimag = float(cimag_value)
 	c = creal + cimag*1j
+	cmap = colormap_value
 
 	# send job to redis queue
-	job = q.enqueue(julia_set, c, max_iterations, res_value, description='Julia set job')
+	job = q.enqueue(julia_set, c, max_iterations, res_value, cmap, description='Julia set job')
 
 	# wait while img is generated (but only for 500s max)
 	while job.result is None:
 		time.sleep(0.1)
 
-	arr = job.result
+	img = job.result
+	return img
 
-	buf = io.BytesIO()
-	plt.imsave(buf, arr, cmap=colormap_value, format='png')
-	data = base64.b64encode(buf.getbuffer()).decode("utf8") 
-	return "data:image/png;base64,{}".format(data)
-
-	return buf
 
 @app.callback(
 	Output(component_id='equation', component_property='children'),
@@ -243,11 +239,10 @@ def display_equation(creal_value, cimag_value):
 	# show equation that is iterated in the complex plane
 	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
-
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8002)
-	# app.run_server(debug=True, host='0.0.0.0')
+	# app.run_server(debug=True, port=8003)
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
