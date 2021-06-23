@@ -12,7 +12,6 @@ import dash
 import dash_core_components as dcc 
 import dash_html_components as html 
 from dash.dependencies import Input, Output
-from dash.exceptions import PreventUpdate
 import flask
 import numexpr as ne 
 import json
@@ -190,17 +189,10 @@ app.layout = html.Div(
 			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
 			'font-weight': 'normal',
 			'margin-top': '0vh',
-			'margin-left': '20vw',
+			'margin-left': '26vw',
 			# 'line-height': 1.8,
 			'font-size': '2.2rem'
 		}),
-
-	# html.Div(
-	# 	html.Button('Click to run', id='button'),
-	# 	style={
-	# 		'display': 'inline-block',
-	# 	},
-	# 	id='body-div'),
 
 	html.Br(),
 	dcc.Loading(
@@ -220,13 +212,8 @@ app.layout = html.Div(
 			 Input(component_id='cimag', component_property='value'),
 			 Input(component_id='colormap', component_property='value'),
 			 Input(component_id='steps', component_property='value'),
-			 Input(component_id='res', component_property='value'),
-			 ])
+			 Input(component_id='res', component_property='value')])
 def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_value):
-
-	# if n_clicks == 0:
-	# 	raise PreventUpdate
-
 	# convert inputs to args and build array
 	max_iterations = steps_value
 	creal = float(creal_value)
@@ -258,19 +245,10 @@ def display_equation(creal_value, cimag_value):
 	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
 
-# @app.callback(
-# 	Output('button', 'n_clicks'),
-# 	[Input('button', 'n_clicks')]
-# 	)
-# def update_output(n_clicks):
-# 	if n_clicks >= 1:
-# 		return 0
-
-
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8016)
-	app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, port=8007)
+	# app.run_server(debug=True, host='0.0.0.0')
 
 
 
