@@ -225,7 +225,7 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 
 	# wait while img is generated (but only for 500s max)
 	while job.result is None:
-		time.sleep(0.1)
+		time.sleep(0.0001)
 
 	img = job.result
 	return img
@@ -241,17 +241,8 @@ def display_equation(creal_value, cimag_value):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8003)
+	# app.run_server(debug=True, port=8004)
 	app.run_server(debug=True, host='0.0.0.0')
-
-
-
-
-
-
-
-
-
 
 
 
