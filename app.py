@@ -14,6 +14,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import flask
 import json
+from rq.serializers import JSONSerializer
 
 from redis import Redis
 from rq import Queue
@@ -34,25 +35,50 @@ colors = {
 	'background': '#fffff',
 	'text': '#10110'
 }
+# steps_value = 100
+# creal = 1
+# cimag = 1
+# colormap_value = 'twilight'
+
+# max_iterations = steps_value
+# creal = float(creal)
+# cimag = float(cimag)
+# c = creal + cimag*1j
+# cmap = colormap_value
+# julia = Jset()
+
+# # send job to redis queue
+# job = q.enqueue(julia.julia_set, c, max_iterations, '1000 by 1000', cmap, description='Julia set job')
+
+# # wait while img is generated (but only for 500s max)
+# while job.result is None:
+# 	time.sleep(0.1)
+
+# arr = job.result
+# print (arr)
+# buf = io.BytesIO()
+# plt.imsave(buf, arr, cmap=cmap, format='png')
+# data = base64.b64encode(buf.getbuffer()).decode("utf8") 
+# return "data:image/png;base64,{}".format(data)
 
 colormaps = [
-            'viridis', 'plasma', 'inferno', 'magma', 'cividis',
-            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
-            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 
-            'seismic','binary', 'gist_yarg', 'gist_gray', 'gray', 
-            'bone', 'pink','spring', 'summer', 'autumn', 'winter', 
-            'cool', 'Wistia','hot', 'afmhot', 'gist_heat', 'copper',
-            'twilight', 'twilight_shifted', 'hsv','Pastel1', 'Pastel2', 
-            'Paired', 'Accent', 'Dark2', 'Set1', 'Set2', 'Set3',
-            'tab10', 'tab20', 'tab20b', 'tab20c','flag', 'prism', 
-            'ocean', 'gist_earth', 'terrain', 'gist_stern',
-            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-            'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
-            'gist_ncar'
-            ]
+			'viridis', 'plasma', 'inferno', 'magma', 'cividis',
+			'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
+			'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+			'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 
+			'seismic','binary', 'gist_yarg', 'gist_gray', 'gray', 
+			'bone', 'pink','spring', 'summer', 'autumn', 'winter', 
+			'cool', 'Wistia','hot', 'afmhot', 'gist_heat', 'copper',
+			'twilight', 'twilight_shifted', 'hsv','Pastel1', 'Pastel2', 
+			'Paired', 'Accent', 'Dark2', 'Set1', 'Set2', 'Set3',
+			'tab10', 'tab20', 'tab20b', 'tab20c','flag', 'prism', 
+			'ocean', 'gist_earth', 'terrain', 'gist_stern',
+			'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
+			'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
+			'gist_ncar'
+			]
 
 resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '3000 by 2000', '4002 by 2668']
 
@@ -221,11 +247,12 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 	cmap = colormap_value
 
 	# send job to redis queue
-	job = q.enqueue(julia_set, c, max_iterations, res_value, cmap, description='Julia set job')
+	job = q.enqueue(julia_set, c, max_iterations, res_value, cmap,
+					ttl=1, failure_ttl=0.5)
 
 	# wait while img is generated (but only for 500s max)
 	while job.result is None:
-		time.sleep(0.0001)
+		time.sleep(0.1)
 
 	img = job.result
 	return img
@@ -239,10 +266,11 @@ def display_equation(creal_value, cimag_value):
 	# show equation that is iterated in the complex plane
 	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
+
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8004)
-	app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, port=8014)
+	# app.run_server(debug=True, host='0.0.0.0')
 
 
 

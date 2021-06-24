@@ -9,6 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 def julia_set(c_value, max_iterations, res_value, cmap):
+	if not max_iterations:
+		max_iterations = 1
+		
 	# convert string resolution to int pair
 	res_value = [i for i in res_value.split()]
 
