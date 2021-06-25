@@ -15,6 +15,7 @@ from dash.dependencies import Input, Output
 import flask
 import json
 from rq.serializers import JSONSerializer
+from dash.exceptions import PreventUpdate
 
 from redis import Redis
 from rq import Queue
@@ -31,35 +32,12 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 server = flask.Flask(__name__)
 app = dash.Dash(server=server, title='Julia set generator', external_stylesheets=external_stylesheets)
 
+job = ''
+
 colors = {
 	'background': '#fffff',
 	'text': '#10110'
 }
-# steps_value = 100
-# creal = 1
-# cimag = 1
-# colormap_value = 'twilight'
-
-# max_iterations = steps_value
-# creal = float(creal)
-# cimag = float(cimag)
-# c = creal + cimag*1j
-# cmap = colormap_value
-# julia = Jset()
-
-# # send job to redis queue
-# job = q.enqueue(julia.julia_set, c, max_iterations, '1000 by 1000', cmap, description='Julia set job')
-
-# # wait while img is generated (but only for 500s max)
-# while job.result is None:
-# 	time.sleep(0.1)
-
-# arr = job.result
-# print (arr)
-# buf = io.BytesIO()
-# plt.imsave(buf, arr, cmap=cmap, format='png')
-# data = base64.b64encode(buf.getbuffer()).decode("utf8") 
-# return "data:image/png;base64,{}".format(data)
 
 colormaps = [
 			'viridis', 'plasma', 'inferno', 'magma', 'cividis',
@@ -117,7 +95,8 @@ app.layout = html.Div(
 				id='creal',
 				type='text',
 				value='-0.744',
-				style={'margin-top': '1vh'})
+				style={'margin-top': '1vh',
+						'width': '12vw'})
 		], 
 		style={
 		'display':'inline-block',
@@ -135,7 +114,8 @@ app.layout = html.Div(
 				id='cimag',
 				type='text',
 				value='0.148',
-				style={'margin-top': '1vh'})
+				style={'margin-top': '1vh',
+						'width': '13vw'})
 		], 
 		style={
 		'display':'inline-block',
@@ -156,7 +136,8 @@ app.layout = html.Div(
 			value=100,
 			min=0,
 			max=300,
-			style={'margin-top': '1vh'})
+			style={'margin-top': '1vh',
+					'width': '13vw'})
 		], 
 		style={
 		'display':'inline-block',
@@ -207,6 +188,10 @@ app.layout = html.Div(
 		'text-align': 'top'
 	}),
 
+	html.Button('Click to run', 
+		id='button', 
+		style={'display': 'inline-block',
+				'margin-left': '10vw'}),
 	html.Div(
 		id='equation', 
 		style={
@@ -214,31 +199,75 @@ app.layout = html.Div(
 			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
 			'font-weight': 'normal',
 			'margin-top': '0vh',
-			'margin-left': '26vw',
-			# 'line-height': 1.8,
-			'font-size': '2.2rem'
+			'margin-left': '2vw',
+			'font-size': '2.2rem',
+			'display': 'inline-block'
+		}),
+
+
+	html.Div(
+		id='status', 
+		style={
+			'textAlign': 'left',
+			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
+			'font-weight': 'normal',
+			'margin-top': '0vh',
+			'margin-left': '2vw',
+			'font-size': '2.2rem',
+			'display': 'inline-block'
 		}),
 
 	html.Br(),
-	dcc.Loading(
-		html.Img(
+	html.Img(
 			id='image',
 			style={'display': 'inline-block',
 					'width': '80vw',
-					'margin-left': '9vw'}),
-		type='cube'
-	)
+					'margin-left': '9vw',
+					'margin-top': '2vh'}),
+
+	dcc.Interval(id='trigger', interval=2000),
+	# hidden div to store redis queue info
+	html.Div(id='job', style={'display': 'none'}, children=dcc.Store(job))
 ])
 
 # responsive callbacks ('component_id' etc are not strictly necessary but 
 # are included for clarity)
-@app.callback(Output(component_id='image', component_property='src'), 
+@app.callback(Output(component_id='image', component_property='src'),
+			[Input(component_id='job', component_property='children'),
+			Input(component_id='trigger', component_property='n_intervals'),
+			Input(component_id='button', component_property='n_clicks')
+			])
+def update_redis(job, img, n_clicks):
+	if n_clicks is None:
+		raise PreventUpdate
+		return 
+
+	# wait while img is generated
+	if q.count > 0:
+		return 
+	job_current = q.fetch_job('jset_job')
+
+	# executes if redis job is complete
+	if job_current.result:
+		n_clicks = None
+		img = job_current.result
+		return img
+
+
+@app.callback(Output(component_id='job', component_property='children'),
 			[Input(component_id='creal', component_property='value'),
 			 Input(component_id='cimag', component_property='value'),
 			 Input(component_id='colormap', component_property='value'),
 			 Input(component_id='steps', component_property='value'),
-			 Input(component_id='res', component_property='value')])
-def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_value):
+			 Input(component_id='res', component_property='value'),
+			 Input(component_id='button', component_property='n_clicks')
+			])
+def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_value, n_clicks):
+	if n_clicks is None:
+		raise PreventUpdate
+	# do not update if redis queue has items waiting
+	if q.count > 0:
+		return ''
 	# convert inputs to args and build array
 	max_iterations = steps_value
 	creal = float(creal_value)
@@ -247,15 +276,18 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 	cmap = colormap_value
 
 	# send job to redis queue
-	job = q.enqueue(julia_set, c, max_iterations, res_value, cmap,
-					ttl=1, failure_ttl=0.5)
+	q.enqueue(julia_set, c, max_iterations, res_value, cmap,
+			ttl=1, failure_ttl=0.5, result_ttl=2, job_id='jset_job')
 
-	# wait while img is generated (but only for 500s max)
-	while job.result is None:
-		time.sleep(0.1)
+	return ''
 
-	img = job.result
-	return img
+@app.callback(Output(component_id='button', component_property='n_clicks'),
+		Input(component_id='image', component_property='src'))
+def reset_clicks(img):
+	if img and q.count == 0:
+		return None
+	else:
+		return 1
 
 
 @app.callback(
@@ -267,10 +299,29 @@ def display_equation(creal_value, cimag_value):
 	return f'z\u00b2 + {creal_value} + {cimag_value}i '
 
 
+@app.callback(
+	Output(component_id='status', component_property='children'),
+	[Input(component_id='button', component_property='n_clicks')])
+def display_status(n_clicks):
+	# show program status
+	if n_clicks:
+		return 'Running...'
+	else:
+		return ''
+
+@app.callback(Output('trigger', 'interval'),
+              [Input('image', 'src')])
+def disable_interval(img):
+    if img:
+        return 60*60*1000 # one day
+    else:
+        return 2000
+
+
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8014)
-	# app.run_server(debug=True, host='0.0.0.0')
+	# app.run_server(debug=True, port=8063)
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
