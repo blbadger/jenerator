@@ -277,7 +277,7 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 
 	# send job to redis queue
 	q.enqueue(julia_set, c, max_iterations, res_value, cmap,
-			ttl=1, failure_ttl=0.5, result_ttl=2, job_id='jset_job')
+			ttl=1, failure_ttl=0.5, result_ttl=6, job_id='jset_job')
 
 	return ''
 
