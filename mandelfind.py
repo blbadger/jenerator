@@ -13,18 +13,17 @@ import matplotlib.pyplot as plt
 
 
 def mandelfind(creal, cimag):
-	time.sleep(0.5)
 	plt.clf()
 	mandelbrot_arr = np.load('mandelbrot_set.npy')
 	point = None
 
 	plt.axis('on')
 	plt.imshow(mandelbrot_arr, cmap = 'twilight_shifted')
-	xtics = [i/10 for i in range(-22, 10, 4)] # 8 ticks
-	ytics = [-i/10 for i in range(-13, 13, 2)] # 8 ticks
+	xtics = [i/10 for i in range(-22, 11, 4)] # 8 ticks
+	ytics = [-i/10 for i in range(-13, 14, 2)] # 13 ticks
 
-	xlocs = [i*(1000/8) for i in range(9)]
-	ylocs = [i*(800/13) for i in range(14)]
+	xlocs = [i*(1000/8) for i in range(8)]
+	ylocs = [i*(800/13) for i in range(13)]
 	plt.xticks(xlocs, xtics)
 	plt.yticks(ylocs, ytics)
 
