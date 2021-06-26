@@ -137,11 +137,11 @@ app.layout = html.Div(
 					type='text',
 					value='0.148',
 					style={'margin-top': '1vh',
-							'width': '13vw'})
+							'width': '17vw'})
 			], 
 			style={
 			'display':'inline-block',
-			'width': '13vw',
+			'width': '17vw',
 			'margin-left': '1vw', 
 			'margin-right': '1vw',
 			'margin-top': '0vh',
@@ -246,7 +246,7 @@ app.layout = html.Div(
 		],
 		style={
 			'display': 'inline-block',
-			'width': '50vw',
+			'width': '53vw',
 			'margin-top': '2vh',
 			'vertical-align': 'top'
 		}
