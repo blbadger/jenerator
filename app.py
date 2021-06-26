@@ -20,6 +20,7 @@ from dash.exceptions import PreventUpdate
 from redis import Redis
 from rq import Queue
 from juliaset import julia_set
+from mandelfind import mandelfind
 
 # import connection from worker.py
 from worker import conn 
@@ -58,7 +59,7 @@ colormaps = [
 			'gist_ncar'
 			]
 
-resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '3000 by 2000', '4002 by 2668']
+resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '2400 by 1800']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -71,153 +72,186 @@ app.layout = html.Div(
 		style={
 			'textAlign': 'center',
 			'color': colors['text'],
-			'margin-bottom': '1vh',
+			'margin-bottom': '3vh',
 			'margin-top': '1vh'
 		}
 	),
-
-	html.H4(
-		children='Julia set generator',
-		style={
-			'textAlign': 'center',
-			'color': colors['text'],
-			'margin-bottom': '0vh',
-			'margin-top': '0vh',
-			'margin-left': '45vw'
+	html.Div(
+		children=[
+		html.Img(
+			id='mandelimage',
+			style={'display': 'inline-block',
+					'width': '30vw',
+					'margin-left': '8vw',
+					'margin-top': '2vh'}),
+		], style={
+		'display': 'inline-block',
+		'width': '40vw'
 		}
 	),
 
 
 	html.Div(
 		children=[
-			html.Label('Specify real value'),
-				dcc.Input(
-				id='creal',
-				type='text',
-				value='-0.744',
-				style={'margin-top': '1vh',
-						'width': '12vw'})
-		], 
-		style={
-		'display':'inline-block',
-		'width': '13vw',
-		'margin-left': '10vw', 
-		'margin-right': '1vw',
-		'margin-top': '0vh',
-		'text-align': 'center'
-	}),
+		html.H4(
+			children='Julia set generator',
+			style={
+				'textAlign': 'center',
+				'color': colors['text'],
+				'margin-bottom': '2vh',
+				'margin-top': '0vh',
+				'margin-left': '15vw',
+				'width': '20vw',
+				'height': '8vh',
+				'display': 'inline-block',
+				'vertical-align': 'top'
+			}
+		),
+		html.Br(),
 
-	html.Div(
-		children=[
-			html.Label('Specify imaginary value'),
+		html.Div(
+			children=[
+				html.Label('Specify real value'),
+					dcc.Input(
+					id='creal',
+					type='text',
+					value='-0.744',
+					style={'margin-top': '1vh',
+							'width': '12vw'})
+			], 
+			style={
+			'display':'inline-block',
+			'width': '13vw',
+			'margin-left': '3vw', 
+			'margin-right': '1vw',
+			'margin-top': '0vh',
+			'text-align': 'center',
+			'vertical-align':'top'
+		}),
+
+		html.Div(
+			children=[
+				html.Label('Specify imaginary value'),
+					dcc.Input(
+					id='cimag',
+					type='text',
+					value='0.148',
+					style={'margin-top': '1vh',
+							'width': '13vw'})
+			], 
+			style={
+			'display':'inline-block',
+			'width': '13vw',
+			'margin-left': '1vw', 
+			'margin-right': '1vw',
+			'margin-top': '0vh',
+			'text-align': 'center',
+			'vertical-align': 'top'
+		}),
+			
+
+		html.Div(
+			children=[
+			html.Label('Maximum iterations'),
 				dcc.Input(
-				id='cimag',
-				type='text',
-				value='0.148',
+				id='steps',
+				type='number',
+				value=100,
+				min=0,
+				max=300,
 				style={'margin-top': '1vh',
 						'width': '13vw'})
-		], 
-		style={
-		'display':'inline-block',
-		'width': '13vw',
-		'margin-left': '1vw', 
-		'margin-right': '1vw',
-		'margin-top': '0vh',
-		'text-align': 'center'
-	}),
-		
+			], 
+			style={
+			'display':'inline-block',
+			'width': '13vw',
+			'margin-left': '1vw', 
+			'margin-right': '1vw',
+			'margin-top': '0vh',
+			'text-align': 'center',
+			'vertical-align': 'top'
+		}),
 
-	html.Div(
-		children=[
-		html.Label('Maximum iteration number'),
-			dcc.Input(
-			id='steps',
-			type='number',
-			value=100,
-			min=0,
-			max=300,
-			style={'margin-top': '1vh',
-					'width': '13vw'})
-		], 
-		style={
-		'display':'inline-block',
-		'width': '13vw',
-		'margin-left': '1vw', 
-		'margin-right': '1vw',
-		'margin-top': '0vh',
-		'text-align': 'center'
-	}),
-
-	html.Div(
-		children=[
-		html.Label('Choose resolution:'),
-		dcc.Dropdown(
-				id='res',
-				options=[{'value': x, 'label': x} 
-						 for x in resolutions],
-				value=resolutions[2],
-				style={
-					'width': '15vw'})
-		],
-		style={
-		'display': 'inline-block',
-		'width': '15vw',
-		'margin-right': '0vw',
-		'margin-left':'3.5vw',
-		'padding-left': '1vw'
-	}),
-
-
-	html.Div(
-		children=[
-		html.Label('Choose color map:'),
+		html.Div(
+			children=[
+			html.Label('Choose resolution:'),
 			dcc.Dropdown(
-				id='colormap',
-				options=[{'value': x, 'label': x} 
-						 for x in colormaps],
-				value='twilight',
-				style={
-					'width': '12vw'})
+					id='res',
+					options=[{'value': x, 'label': x} 
+							 for x in resolutions],
+					value=resolutions[1],
+					style={
+						'width': '15vw'})
+			],
+			style={
+			'display': 'inline-block',
+			'width': '15vw',
+			'margin-right': '0vw',
+			'margin-left':'8vw',
+			'padding-left': '1vw',
+			'margin-top': '4vh'
+		}),
+
+
+		html.Div(
+			children=[
+			html.Label('Choose color map:'),
+				dcc.Dropdown(
+					id='colormap',
+					options=[{'value': x, 'label': x} 
+							 for x in colormaps],
+					value='twilight',
+					style={
+						'width': '12vw'})
+			],
+			style={
+			'display':'inline-block',
+			'width': '13vw',
+			'margin-left': '2.5vw', 
+			'margin-right': '0vw',
+			'margin-top': '4vh',
+			'text-align': 'top'
+		}),
+
+		html.Button('Click to run', 
+			id='button', 
+			style={'display': 'inline-block',
+					'margin-left': '4vw'}),
+		html.Div(
+			id='equation', 
+			style={
+				'textAlign': 'left',
+				'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
+				'font-weight': 'normal',
+				'margin-top': '0vh',
+				'margin-left': '2vw',
+				'font-size': '2.2rem',
+				'display': 'inline-block',
+				'margin-top': '6vh',
+				'margin-bottom': '1vh'
+			}),
+
+
+		html.Div(
+			id='status', 
+			style={
+				'textAlign': 'left',
+				'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
+				'font-weight': 'normal',
+				'margin-top': '0vh',
+				'margin-left': '2vw',
+				'font-size': '2.2rem',
+				'display': 'inline-block'
+			})
 		],
 		style={
-		'display':'inline-block',
-		'width': '13vw',
-		'margin-left': '2.5vw', 
-		'margin-right': '0vw',
-		'margin-top': 0,
-		'text-align': 'top'
-	}),
+			'display': 'inline-block',
+			'width': '50vw',
+			'margin-top': '2vh',
+			'vertical-align': 'top'
+		}
+	),
 
-	html.Button('Click to run', 
-		id='button', 
-		style={'display': 'inline-block',
-				'margin-left': '10vw'}),
-	html.Div(
-		id='equation', 
-		style={
-			'textAlign': 'left',
-			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
-			'font-weight': 'normal',
-			'margin-top': '0vh',
-			'margin-left': '2vw',
-			'font-size': '2.2rem',
-			'display': 'inline-block'
-		}),
-
-
-	html.Div(
-		id='status', 
-		style={
-			'textAlign': 'left',
-			'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
-			'font-weight': 'normal',
-			'margin-top': '0vh',
-			'margin-left': '2vw',
-			'font-size': '2.2rem',
-			'display': 'inline-block'
-		}),
-
-	html.Br(),
 	html.Img(
 			id='image',
 			style={'display': 'inline-block',
@@ -246,6 +280,9 @@ def update_redis(job, img, n_clicks):
 	if q.count > 0:
 		return 
 	job_current = q.fetch_job('jset_job')
+	
+	if not job_current:
+		return
 
 	# executes if redis job is complete
 	if job_current.result:
@@ -277,7 +314,7 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 
 	# send job to redis queue
 	q.enqueue(julia_set, c, max_iterations, res_value, cmap,
-			ttl=1, failure_ttl=0.5, result_ttl=6, job_id='jset_job')
+			ttl=1, failure_ttl=0.5, result_ttl=2, job_id='jset_job')
 
 	return ''
 
@@ -300,6 +337,15 @@ def display_equation(creal_value, cimag_value):
 
 
 @app.callback(
+	Output(component_id='mandelimage', component_property='src'),
+	[Input(component_id='creal', component_property='value'),
+	Input(component_id='cimag', component_property='value')])
+def display_mandelbrot(creal_value, cimag_value):
+	# show the location of the complex point chosen on the Mandelbrot set
+	bytestring = mandelfind(creal_value, cimag_value)
+	return bytestring
+
+@app.callback(
 	Output(component_id='status', component_property='children'),
 	[Input(component_id='button', component_property='n_clicks')])
 def display_status(n_clicks):
@@ -320,7 +366,7 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8063)
+	# app.run_server(debug=True, port=8067)
 	app.run_server(debug=True, host='0.0.0.0')
 
 
