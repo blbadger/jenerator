@@ -23,7 +23,7 @@ def mandelfind(creal, cimag):
 	ytics = [-i/10 for i in range(-13, 14, 2)] # 13 ticks
 
 	xlocs = [i*(1000/8) for i in range(9)]
-	ylocs = [i*(800/13) for i in range(13)]
+	ylocs = [i*(800/13) for i in range(14)]
 	plt.xticks(xlocs, xtics)
 	plt.yticks(ylocs, ytics)
 
@@ -62,3 +62,5 @@ def mandelfind(creal, cimag):
 	plt.savefig(buf, format='png', bbox_inches='tight') # pad_inches=0
 	data = base64.b64encode(buf.getbuffer()).decode("utf8") 
 	return "data:image/png;base64,{}".format(data)
+
+mandelfind(1, 1)
