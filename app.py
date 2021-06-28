@@ -59,7 +59,7 @@ colormaps = [
 			'gist_ncar'
 			]
 
-resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '3000 by 2000', '3300 by 2200']
+resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200']
 
 # page layout and inputs specified
 app.layout = html.Div(
