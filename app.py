@@ -59,7 +59,7 @@ colormaps = [
 			'gist_ncar'
 			]
 
-resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200']
+resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1500', '3000 by 2000', '3300 by 2200']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -98,10 +98,10 @@ app.layout = html.Div(
 			style={
 				'textAlign': 'center',
 				'color': colors['text'],
-				'margin-bottom': '2vh',
+				'margin-bottom': '0vh',
 				'margin-top': '0vh',
 				'margin-left': '15vw',
-				'width': '20vw',
+				'width': '28vw',
 				'height': '8vh',
 				'display': 'inline-block',
 				'vertical-align': 'top'
@@ -111,7 +111,7 @@ app.layout = html.Div(
 
 		html.Div(
 			children=[
-				html.Label('Specify real value'),
+				html.Label('Real value'),
 					dcc.Input(
 					id='creal',
 					type='text',
@@ -126,22 +126,22 @@ app.layout = html.Div(
 			'margin-right': '1vw',
 			'margin-top': '0vh',
 			'text-align': 'center',
-			'vertical-align':'top'
+			'vertical-align':'bottom'
 		}),
 
 		html.Div(
 			children=[
-				html.Label('Specify imaginary value'),
+				html.Label('Imaginary value'),
 					dcc.Input(
 					id='cimag',
 					type='text',
 					value='0.148',
 					style={'margin-top': '1vh',
-							'width': '17vw'})
+							'width': '14vw'})
 			], 
 			style={
 			'display':'inline-block',
-			'width': '17vw',
+			'width': '14vw',
 			'margin-left': '1vw', 
 			'margin-right': '1vw',
 			'margin-top': '0vh',
@@ -160,11 +160,11 @@ app.layout = html.Div(
 				min=0,
 				max=300,
 				style={'margin-top': '1vh',
-						'width': '13vw'})
+						'width': '15vw'})
 			], 
 			style={
 			'display':'inline-block',
-			'width': '13vw',
+			'width': '15vw',
 			'margin-left': '1vw', 
 			'margin-right': '1vw',
 			'margin-top': '0vh',
@@ -181,15 +181,15 @@ app.layout = html.Div(
 							 for x in resolutions],
 					value=resolutions[1],
 					style={
-						'width': '15vw'})
+						'width': '17vw'})
 			],
 			style={
 			'display': 'inline-block',
-			'width': '15vw',
+			'width': '17vw',
 			'margin-right': '0vw',
 			'margin-left':'8vw',
 			'padding-left': '1vw',
-			'margin-top': '4vh'
+			'margin-top': '4.5vh'
 		}),
 
 
@@ -202,21 +202,23 @@ app.layout = html.Div(
 							 for x in colormaps],
 					value='twilight',
 					style={
-						'width': '12vw'})
+						'width': '14.5vw'})
 			],
 			style={
 			'display':'inline-block',
-			'width': '13vw',
+			'width': '14.5vw',
 			'margin-left': '2.5vw', 
 			'margin-right': '0vw',
-			'margin-top': '4vh',
+			'margin-top': '4.5vh',
 			'text-align': 'top'
 		}),
 
 		html.Button('Click to run', 
 			id='button', 
 			style={'display': 'inline-block',
-					'margin-left': '4vw'}),
+					'margin-left': '7vw',
+					'font-size': '1.4rem',
+					'margin-top': '4.5vh'}),
 		html.Div(
 			id='equation', 
 			style={
@@ -227,7 +229,7 @@ app.layout = html.Div(
 				'margin-left': '2vw',
 				'font-size': '2.2rem',
 				'display': 'inline-block',
-				'margin-top': '6vh',
+				'margin-top': '4vh',
 				'margin-bottom': '1vh'
 			}),
 
@@ -238,7 +240,7 @@ app.layout = html.Div(
 				'textAlign': 'left',
 				'font-family': "Open Sans", # "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;', 
 				'font-weight': 'normal',
-				'margin-top': '0vh',
+				'margin-top': '4vh',
 				'margin-left': '2vw',
 				'font-size': '2.2rem',
 				'display': 'inline-block'
@@ -366,8 +368,8 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8068)
-	app.run_server(debug=True, host='0.0.0.0')
+	app.run_server(debug=True, port=8071)
+	# app.run_server(debug=True, host='0.0.0.0')
 
 
 
