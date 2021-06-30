@@ -19,11 +19,14 @@ def mandelfind(creal, cimag):
 
 	plt.axis('on')
 	plt.imshow(mandelbrot_arr, cmap = 'twilight_shifted')
-	xtics = [i/10 for i in range(-22, 11, 4)] # 8 ticks
-	ytics = [-i/10 for i in range(-13, 14, 2)] # 13 ticks
+	# xtics = [i/10 for i in range(-22, 11, 4)] # 1000px, 30.303 px per unit
+	# ytics = [-i/10 for i in range(-13, 14, 3)] # 800px, 29.629 px per unit
 
-	xlocs = [i*(1000/8) for i in range(9)]
-	ylocs = [i*(800/13) for i in range(14)]
+	xtics = [-2, -1.5, -1, -0.5, 0, 0.5, 1] # 8 ticks
+	ytics = [1, 0.5, 0, -0.5, -1] # 9 ticks
+
+	xlocs = [(i - -2.2)*312.5 for i in xtics]
+	ylocs = [(i - -1.3)*307.69 for i in ytics]
 	plt.xticks(xlocs, xtics)
 	plt.yticks(ylocs, ytics)
 
