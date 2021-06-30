@@ -7,6 +7,7 @@ import base64
 # import third-party libs
 import numpy as np 
 import matplotlib.pyplot as plt 
+import numexpr as ne
 
 def julia_set(c_value, max_iterations, res_value, cmap):
 	if not max_iterations:

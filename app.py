@@ -81,8 +81,8 @@ app.layout = html.Div(
 		html.Img(
 			id='mandelimage',
 			style={'display': 'inline-block',
-					'width': '30vw',
-					'margin-left': '8vw',
+					'width': '27.5vw',
+					'margin-left': '12vw',
 					'margin-top': '2vh'}),
 		], style={
 		'display': 'inline-block',
@@ -258,8 +258,9 @@ app.layout = html.Div(
 			id='image',
 			style={'display': 'inline-block',
 					'width': '80vw',
-					'margin-left': '9vw',
-					'margin-top': '2vh'}),
+					'margin-left': '10vw',
+					'margin-top': '2vh',
+					'margin-bottom': '4vh'}),
 
 	dcc.Interval(id='trigger', interval=2000),
 	# hidden div to store redis queue info
@@ -368,7 +369,7 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8071)
+	app.run_server(debug=True, port=8076)
 	# app.run_server(debug=True, host='0.0.0.0')
 
 
