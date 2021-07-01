@@ -259,7 +259,7 @@ app.layout = html.Div(
 			style={'display': 'inline-block',
 					'width': '80vw',
 					'margin-left': '10vw',
-					'margin-top': '2vh',
+					'margin-top': '3vh',
 					'margin-bottom': '4vh'}),
 
 	dcc.Interval(id='trigger', interval=2000),
@@ -369,8 +369,8 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8076)
-	# app.run_server(debug=True, host='0.0.0.0')
+	# app.run_server(debug=True, port=8076)
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
