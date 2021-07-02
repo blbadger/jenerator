@@ -315,9 +315,10 @@ def display_juliaset(creal_value, cimag_value, colormap_value, steps_value, res_
 	c = creal + cimag*1j
 	cmap = colormap_value
 
-	# send job to redis queue
-	q.enqueue(julia_set, c, max_iterations, res_value, cmap,
-			ttl=1, failure_ttl=0.5, result_ttl=2, job_id='jset_job')
+	# send job to redis queue if not already done
+	if not q.fetch_job('jset_job'):
+		q.enqueue(julia_set, c, max_iterations, res_value, cmap,
+				ttl=1, failure_ttl=0.5, result_ttl=2, job_id='jset_job')
 
 	return ''
 
@@ -369,7 +370,7 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	# app.run_server(debug=True, port=8076)
+	# app.run_server(debug=True, port=8001)
 	app.run_server(debug=True, host='0.0.0.0')
 
 
