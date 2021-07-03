@@ -59,7 +59,7 @@ colormaps = [
 			'gist_ncar'
 			]
 
-resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200']
+resolutions = ['900 by 600', '1200 by 800', '1500 by 1000', '1800 by 1200', '2100 by 1400', '2400 by 1600']
 
 # page layout and inputs specified
 app.layout = html.Div(
@@ -370,8 +370,8 @@ def disable_interval(img):
 
 # run the app in the cloud
 if __name__ == '__main__':
-	app.run_server(debug=True, port=8009)
-	# app.run_server(debug=True, host='0.0.0.0')
+	# app.run_server(debug=True, port=8013)
+	app.run_server(debug=True, host='0.0.0.0')
 
 
 
