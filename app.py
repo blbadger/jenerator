@@ -94,10 +94,10 @@ app.layout = html.Div(
 	html.Div(
 		children=[
 		html.H4(
-			children='Julia set generator',
+			children=html.A('Julia set generator', href='https://github.com/blbadger/jenerator'),
 			style={
 				'textAlign': 'center',
-				'color': colors['text'],
+				'color': '#add8e6',
 				'margin-bottom': '0vh',
 				'margin-top': '0vh',
 				'margin-left': '15vw',
