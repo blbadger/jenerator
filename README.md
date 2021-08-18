@@ -25,7 +25,7 @@ The Jenerator is a flask app using a Dash interface for front end and callbacks.
 
 This system of background Redis processes circumvents the problem of long computation times faced at higher resolutions.  Heroku (and most other cloud PaaS) have hard time limits (30s in this case) and so simply having the server compute an array for longer than this results in a timeout error.  Timeouts do not occur even when computations run for more than 5 minutes with the current configuration because the app is continually 'active' as it pings the Redis server.  
 
-The generation of a Julia set only occurs when the 'CLICK TO RUN' button is pressed, but real-time callbacks for placing the red X on the correct position in the Mandelbrot set and displaying the correct equation occur upon any modification of the real or imaginary values.  These processes do not employ redis (as they are very fast) but are performed directly in the flask app using helper functions.  
+The generation of a Julia set only occurs when the `CLICK TO RUN` button is pressed, but real-time callbacks for placing the red X on the correct position in the Mandelbrot set and displaying the correct equation occur upon any modification of the real or imaginary values.  These processes do not employ redis (as they are very fast) but are performed directly in the flask app using helper functions.  
 
 
 ## Learn more
