@@ -8,11 +8,11 @@ To use this app, follow the link provided in the 'About' section on this page.  
 
 ![screenshot](/assets/Screenshot_jenerator.png)
 
-There are three primary input fields: 'Real value', 'Imaginary value', and 'Maximum iterations'.  The first two fields specify the equation shown to the right of the 'CLICK TO RUN' button, and the coordinates chosen by the user are displayed by the red X symbol on the Mandelbrot set to the left of the inputs.  
+There are three primary input fields: `Real value`, `Imaginary value`, and `Maximum iterations`.  The first two fields specify the equation shown to the right of the `CLICK TO RUN` button, and the coordinates chosen by the user are displayed by the red X symbol on the Mandelbrot set to the left of the inputs.  
 
 Choosing values that place the red X inside the dark central region of the Mandelbrot set leads to a globular Julia set, whereas placing the X outside the Mandelbrot set leads to disconnected 'dusts'. In general, the Julia set is most visually interesting when the values chosen place the red X near the (lighter in color) border region of the Mandelbrot set.
 
-The 'Maximum iterations' field tells the program how many iterations of the equation displayed should be performed.  Increasing this value will often give better map clarity, at the expense of longer computation time.  Likewise, the 'Resolution' field will increase resolution at the expense of time, as more calculations are required for a given area.
+The `Maximum iterations` field tells the program how many iterations of the equation displayed should be performed.  Increasing this value will often give better map clarity, at the expense of longer computation time.  Likewise, the 'Resolution' field will increase resolution at the expense of time, as more calculations are required for a given area.
 
 For z² + -0.764 + 0.12i, the following image is produced:
 
@@ -25,7 +25,7 @@ The Jenerator is a flask app using a Dash interface for front end and callbacks.
 
 This system of background Redis processes circumvents the problem of long computation times faced at higher resolutions.  Heroku (and most other cloud PaaS) have hard time limits (30s in this case) and so simply having the server compute an array for longer than this results in a timeout error.  Timeouts do not occur even when computations run for more than 5 minutes with the current configuration because the app is continually 'active' as it pings the Redis server.  
 
-The generation of a Julia set only occurs when the 'CLICK TO RUN' button is pressed, but real-time callbacks for placing the red X on the correct position in the Mandelbrot set and displaying the correct equation occur upon any modification of the real or imaginary values.  These processes do not employ redis (as they are very fast) but are performed directly in the flask app using helper functions.  
+The generation of a Julia set only occurs when the `CLICK TO RUN` button is pressed, but real-time callbacks for placing the red X on the correct position in the Mandelbrot set and displaying the correct equation occur upon any modification of the real or imaginary values.  These processes do not employ redis (as they are very fast) but are performed directly in the flask app using helper functions.  
 
 
 ## Learn more
