@@ -1,3 +1,5 @@
+## *** Sunsetted 11/2022 with the removal of free tier Heroku services ***
+
 ## Jenerator: Julia sets generator 
 
 ### How to use
